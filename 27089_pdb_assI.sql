@@ -318,7 +318,7 @@ GROUP BY c.CourseID, c.CourseName;
   Select s.FirstName,s.LastName,p.AmountPaid from Students s Join Payments p 
   On s.StudentID=p.StudentID Group by s.FirstName,s.LastName,p.AmountPaid;
    
-      --Question III.6(Show students who haven’t enrolled in any course )
+      --Question III.6(Show students who havenÂ’t enrolled in any course )
 
 SELECT s.StudentID, s.FirstName, s.LastName
 FROM Students s
