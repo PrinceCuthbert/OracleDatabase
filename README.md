@@ -59,7 +59,7 @@ Deploy the database on an Oracle Database server for production use.
 
 GitHub: https://github.com/PrinceCuthbert
 
-LinkedIn: [Ishimwe Prince cuthbert]
+LinkedIn: https://www.linkedin.com/in/ishimwe-prince-cuthbert-8136682b6/
 
 🔭 Future Features Advanced Reporting: Add queries to generate reports like most borrowed books, member activity, etc.
 
