@@ -33,7 +33,7 @@ Oracle Database installed.
 Oracle SQL Developer or any SQL client to execute queries.
 Setup
 Clone this repository to your desired folder:
-git clone https://github.com/PrinceCuthbert/OracleDatabase/tree/main
+git clone https://github.com/PrinceCuthbert/OracleDatabase/blob/main/27089_pdb_assI.sql
 Open the SQL scripts in Oracle SQL Developer.
 ##Install
 
