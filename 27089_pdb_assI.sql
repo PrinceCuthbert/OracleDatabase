@@ -1,475 +1,386 @@
+--Library Management System: Database
 
---PL/SQL Assignment
+-- Creating Tables
+-- Creating Tables
+-- Creating Tables
 
 
-
---Question I
-
---creating tables
-create table Customers(
-CustomerID int,
-Customer_name varchar2(15),
-Email varchar2(50),
-City varchar2(30)
+-- Create Authors Table
+CREATE TABLE Authors (
+    author_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50)
 );
 
-
-create table Orders(
-orderID int,
-OrderDate date,
-CustomerID int,
-Amount int
+-- Create Books Table
+CREATE TABLE Books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(100),
+    genre VARCHAR(50),
+    publication_date DATE,
+    availability_status VARCHAR(20) -- 'Available' or 'Not Available'
 );
 
-
-         -- I.2:Modifying tables to establish integrity
-
-alter table Customers add constraints pk_customer_id primary key (CustomerID);
-alter table Orders add constraints pk_order_id primary key (orderID) ;
-alter table Orders add constraints fk_customer_id foreign key (CustomerID) references Customers(CustomerID); 
-
-
-        --Inserting data into tables
-
-        --1 Customer table
-
-insert into Customers(CustomerID,Customer_name,Email,City) values (1,'Alice','alice@example.com','Kigali');
-insert into Customers(CustomerID,Customer_name,Email,City) values (2,'Bob','bob@example.com','Musanze');
-insert into Customers(CustomerID,Customer_name,Email,City) values (3,'Charlie','charlie@example.com','Huye');
-insert into Customers(CustomerID,Customer_name,Email,City) values (4,'David','david@example.com','Rubavu');
-
-
-
-        --2 Orders table
-
-insert into Orders(OrderID,CustomerID,OrderDate,Amount) values (101,1,TO_DATE('2024-01-10','YY-MM-DD'),100);
-insert into Orders(OrderID,CustomerID,OrderDate,Amount) values (102,2,TO_DATE('2024-02-15','YY-MM-DD'),200);
-insert into Orders(OrderID,CustomerID,OrderDate,Amount) values (103,1,TO_DATE('2024-03-05','YY-MM-DD'),150);
-insert into Orders(OrderID,CustomerID,OrderDate,Amount) values (104,3,TO_DATE('2024-04-20','YY-MM-DD'),300);
-
-
-        -- Question I.3(Write a SQL query to find the total amount spent by each customer.)
-
-SELECT c.CustomerID,c.Customer_name,SUM(o.Amount) As "Total Amount Spent" from Customers c 
-left join Orders o on c.CustomerID=o.CustomerID Group by c.CustomerID, c.Customer_name;
-
-        -- Question I.4(Write an SQL query to find all orders placed by "Alice")
-
-sel
-ect c.Customer_name,o.OrderID,o.CustomerID,o.OrderDate,o.Amount from Orders o Join 
-Customers c On o.CustomerID=c.CustomerID Where c.Customer_name='Alice';
-
-        --Question I.5(Write an SQL query to join Customers and Orders tables to display customer names along with their order details. )
-
-select  c.Customer_name,c.CustomerID,o.OrderID,o.OrderDate,o.Amount 
-from Orders o Join Customers c on c.CustomerID=o.CustomerID;
-
-          --Question I.6 (Write an SQL query to retrieve a list of all customers along with their order details)
-select c.CustomerID,c.Customer_name,c.City,o.OrderID,o.OrderDate,o.Amount 
-from Customers c left join Orders o on o.CustomerID=c.CustomerID;
-
-         --Question I.7(Write a query to list all customers who haven't placed any orders. )
-         
-select c.CustomerID,c.Customer_name,c.Email,c.City from Customers c left join Orders 
-o on c.CustomerID=o.CustomerID where o.OrderID IS NULL;     
-            
-          --Question I.8(Write an SQL query to retrieve a list of all customers along with their order details='Same as Question I.6 ')   
-
-select c.CustomerID,c.Customer_name,c.City,o.OrderID,o.OrderDate,o.Amount 
-from Customers c left join Orders o on o.CustomerID=c.CustomerID;
-
-
-
---Question II
---Question II
---Question II
-
-
-Create table Department(
-DepartmentID Number Primary Key,
-DepartmentName varchar2(100),
-Location varchar2(100) 
+-- Create Book_Authors Table (Many-to-Many relationship)
+CREATE TABLE Book_Authors (
+    book_id INT,
+    author_id INT,
+    PRIMARY KEY (book_id, author_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id),
+    FOREIGN KEY (author_id) REFERENCES Authors(author_id)
 );
 
-Create table Employees(
-EmployeeID int primary key,
-FirstName varchar2(50),
-LastName Varchar2(50),
-DepartmentID number,
-constraint fk_department foreign key (DepartmentID) references Department(DepartmentID)
+-- Create Members Table
+CREATE TABLE Members (
+    member_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    join_date DATE,
+    email VARCHAR(100)
 );
 
-
-
-Create table Salary(
-SalaryID number Primary Key,
-EmployeeID int,
-SalaryAmount number(10,2),
-PayDate date,
-constraint fk_employee foreign key (EmployeeID) references Employees(EmployeeID)
+-- Create Transactions Table (One-to-Many with Members and Books)
+CREATE TABLE Transactions (
+    transaction_id INT PRIMARY KEY,
+    member_id INT,
+    book_id INT,
+    borrow_date DATE,
+    return_date DATE,
+    status VARCHAR(20), -- 'borrowed' or 'returned'
+    FOREIGN KEY (member_id) REFERENCES Members(member_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
 
+--1. Insert, Update, and Delete Data
+--1. Insert, Update, and Delete Data
 
---Insert into Department
-
-INSERT INTO Department (DepartmentID, DepartmentName, Location) VALUES (1, 'HR', 'Kigali');
-INSERT INTO Department (DepartmentID, DepartmentName, Location) VALUES (2, 'IT', 'Musanze');
-INSERT INTO Department (DepartmentID, DepartmentName, Location) VALUES (3, 'Finance', 'Huye');
-INSERT INTO Department (DepartmentID, DepartmentName, Location) VALUES (4, 'Marketing', 'Rubavu');
-INSERT INTO Department (DepartmentID, DepartmentName, Location) VALUES (5, 'Sales', 'Nyanza');
 
 
---Insert into Departments
+--Inserting data
 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (101, 'Niyonsaba', 'Jean Marie', 1);
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (102, 'Mugisha', 'Alice', 2); 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (103, 'Munezero', 'Emmanuel', 3);
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (104, 'Mukamusoni', 'Claire', 4); 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (105, 'Hakizimana', 'Patrice', 5); 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (106, 'Gwiza', 'Gisele', 2); 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (107, 'Mugisha', 'John', 1); 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (108, 'Uwase', 'Aline', 3); 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (109, 'Mahoro', 'Viviane', 4); 
-INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID) VALUES (110, 'Gakire', 'Emilie', 5); 
-
-
--- Insert Data into Salary Table
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (1, 101, 4500.00, TO_DATE('2024-01-15', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (2, 102, 6000.00, TO_DATE('2024-01-20', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (3, 103, 5200.00, TO_DATE('2024-02-10', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (4, 104, 4800.00, TO_DATE('2024-02-15', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (5, 105, 5500.00, TO_DATE('2024-03-05', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (6, 106, 6200.00, TO_DATE('2024-01-25', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (7, 107, 4700.00, TO_DATE('2024-03-01', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (8, 108, 5100.00, TO_DATE('2024-01-30', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (9, 109, 4900.00, TO_DATE('2024-02-20', 'YYYY-MM-DD'));
-INSERT INTO Salary (SalaryID, EmployeeID, SalaryAmount, PayDate) VALUES (10, 110, 5300.00, TO_DATE('2024-01-18', 'YYYY-MM-DD'));
-
 
-
-     --Question II:1(Retrieve all employees with their department names)
-     
-select e.EmployeeID,e.FirstName, e.LastName, d.DepartmentName  from Employees e join Department d on e.DepartmentID=d.DepartmentID;
-     
-    --Question II:2( employees who receive the highest salary in the database)
-    
- SELECT e.EmployeeID, e.FirstName, e.LastName, s.SalaryAmount
-FROM Employees e
-JOIN Salary s ON e.EmployeeID = s.EmployeeID
-GROUP BY e.EmployeeID, e.FirstName, e.LastName, s.SalaryAmount
-HAVING s.SalaryAmount = (SELECT MAX(SalaryAmount) FROM Salary);
 
+-- Insert Authors
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (1, 'John', 'Doe');
 
-    --Question II:3 (List of all employees who have not received any salary.)
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (2, 'Alice', 'Smith');
 
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (3, 'James', 'Miller');
 
-UPDATE Salary
-SET SalaryAmount = NULL
-WHERE SalaryID = 5 AND EmployeeID = 105;
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (4, 'Rachel', 'Adams');
 
-SELECT e.EmployeeID, e.FirstName, e.LastName, s.SalaryAmount
-FROM Employees e
-JOIN Salary s ON e.EmployeeID = s.EmployeeID Where s.SalaryAmount is NULL;
-
-    --Question II:4 (Count the number of employees in each department. )
-    
- SELECT COUNT(*) AS "Employees per Department", e.DepartmentID, d.DepartmentName FROM 
- Employees e JOIN Department d ON  e.DepartmentID = d.DepartmentID GROUP BY e.DepartmentID,  d.DepartmentName;
- 
-      --Question II:5 (Find employees who work in the "IT" department. )
-      
- select e.EmployeeID,e.FirstName,e.LastName,d.DepartmentName from Employees e Join 
- Department d on e.DepartmentID=d.DepartmentID where DepartmentName='IT';
- 
-      --Question II:6 (Find employees who earn more than 5000. )
-      
- select  e.EmployeeID,e.FirstName,e.LastName, AVG(s.SalaryAmount) from Employees e Join Salary s on e.EmployeeID=s.EmployeeID 
- Group by e.EmployeeID,e.FirstName,e.LastName, s.SalaryAmount  Having AVG(s.SalaryAmount)>5000;
- 
-   --Question II:7 (Retrieve employees who received their salary in January 2024.) 
-   
-SELECT e.EmployeeID, e.FirstName, e.LastName, s.PayDate FROM Employees e JOIN 
-Salary s ON e.EmployeeID = s.EmployeeID WHERE TO_CHAR(s.PayDate, 'YYYY-MM-DD') LIKE '%-01-%';
-
-    --Question II:8 (Count the number of employees in each department='Same as Question II.4 ') 
-
- SELECT COUNT(*) AS "Employees per Department", e.DepartmentID, d.DepartmentName FROM 
- Employees e JOIN Department d ON  e.DepartmentID = d.DepartmentID GROUP BY e.DepartmentID, d.DepartmentName;    
-
-
-
-
-
---Question III
---Question III
---Question III
-
--- Creating database tables
-
-Create table Students(
-StudentID number Primary Key,
-FirstName Varchar2(50),
-LastName Varchar2(50),
-DateOfBirth date,
-Gender Varchar2(10),
-Contact varchar2(20)
-);
-
-
-Create table Courses(
-
-CourseID number primary key,
-CourseName varchar2(50),
-Credits Number,
-Instructor varchar2(50)
-);
-
-
-Create table Enrollments (
-EnrollmentsID number primary key,
-StudentID number,
-CourseID number,
-EnrollmentDate date,
-Grade Varchar2(2),
-constraint fk_StudentID foreign key (StudentID) references Students(StudentID),
-constraint fk_CourseID foreign key (CourseID) references Courses(CourseID)
-);
-
-Create table Payments(
-
-PaymentID number primary key,
-StudentID number,
-AmountPaid number(10,2),
-PaymentDate date,
-PaymentMethod Varchar2(50),
-
-constraint fk_Payment_StudentID foreign key(StudentID) references Students(StudentID)
-
-);
-
-
---Inserting data into tables
-
--- Insert into Students table
-INSERT INTO Students (StudentID, FirstName, LastName, DateOfBirth, Gender, Contact) VALUES (1, 'Ishimwe', 'Jean Pierre', TO_DATE('1999-02-17', 'YYYY-MM-DD'), 'Male', '0788123456');
-INSERT INTO Students (StudentID, FirstName, LastName, DateOfBirth, Gender, Contact) VALUES (2, 'Ndayishimye', 'Alice', TO_DATE('2002-06-11', 'YYYY-MM-DD'), 'Female', '0787654321');
-INSERT INTO Students (StudentID, FirstName, LastName, DateOfBirth, Gender, Contact) VALUES (3, 'Uwamahoro', 'Claudette', TO_DATE('2005-01-05', 'YYYY-MM-DD'), 'Male', '0789321567');
-INSERT INTO Students (StudentID, FirstName, LastName, DateOfBirth, Gender, Contact) VALUES (4, 'Mugisha', 'Faustin', TO_DATE('2001-11-28', 'YYYY-MM-DD'), 'Female', '0788776543');
-INSERT INTO Students (StudentID, FirstName, LastName, DateOfBirth, Gender, Contact) VALUES (5, 'Uwase', 'Aline', TO_DATE('2004-09-14', 'YYYY-MM-DD'), 'Female', '0786453789');
-
-
--- Insert into Courses table
-INSERT INTO Courses (CourseID, CourseName, Credits, Instructor) VALUES (1, 'Mathematics', 3, 'Dr. Niyonsaba');
-INSERT INTO Courses (CourseID, CourseName, Credits, Instructor) VALUES (2, 'English Literature', 2, 'Mr. Mukeshimana');
-INSERT INTO Courses (CourseID, CourseName, Credits, Instructor) VALUES (3, 'Computer Science', 4, 'Prof. Uwimana');
-INSERT INTO Courses (CourseID, CourseName, Credits, Instructor) VALUES (4, 'History', 3, 'Ms. Ingabire');
-INSERT INTO Courses (CourseID, CourseName, Credits, Instructor) VALUES (5, 'Physics', 4, 'Dr. Gatare');
-
--- Insert into Enrollments table
-INSERT INTO Enrollments (EnrollmentsID, StudentID, CourseID, EnrollmentDate, Grade) VALUES (2, 2, 1, TO_DATE('2024-01-15', 'YYYY-MM-DD'), 'B');
-INSERT INTO Enrollments (EnrollmentsID, StudentID, CourseID, EnrollmentDate, Grade) VALUES (3, 3, 4, TO_DATE('2024-02-01', 'YYYY-MM-DD'), 'C');
-INSERT INTO Enrollments (EnrollmentsID, StudentID, CourseID, EnrollmentDate, Grade) VALUES (4, 4, 2, TO_DATE('2024-03-01', 'YYYY-MM-DD'), 'B');
-INSERT INTO Enrollments (EnrollmentsID, StudentID, CourseID, EnrollmentDate, Grade) VALUES (5, 5, 1, TO_DATE('2024-01-05', 'YYYY-MM-DD'), 'A');
-
--- Insert into Payments table
-INSERT INTO Payments (PaymentID, StudentID, AmountPaid, PaymentDate, PaymentMethod) VALUES (1, 1, 5000.00, TO_DATE('2024-01-12', 'YYYY-MM-DD'), 'Bank Transfer');
-INSERT INTO Payments (PaymentID, StudentID, AmountPaid, PaymentDate, PaymentMethod) VALUES (2, 2, 4000.00, TO_DATE('2024-02-10', 'YYYY-MM-DD'), 'Cash');
-INSERT INTO Payments (PaymentID, StudentID, AmountPaid, PaymentDate, PaymentMethod) VALUES (3, 3, 3500.00, TO_DATE('2024-02-15', 'YYYY-MM-DD'), 'Mobile Money');
-INSERT INTO Payments (PaymentID, StudentID, AmountPaid, PaymentDate, PaymentMethod) VALUES (4, 4, 6000.00, TO_DATE('2024-03-03', 'YYYY-MM-DD'), 'Bank Transfer');
-INSERT INTO Payments (PaymentID, StudentID, AmountPaid, PaymentDate, PaymentMethod) VALUES (5, 5, 4500.00, TO_DATE('2024-03-07', 'YYYY-MM-DD'), 'Cash');
-
-
-       --  ANSWERING QUESTION NOW
-       --  ANSWERING QUESTION NOW
-       --  ANSWERING QUESTION NOW
-
-       
-       --Question III.1(Show the oldest student in the database.)
-       
-SELECT FirstName, LastName, DateOfBirth FROM Students ORDER BY DateOfBirth ASCFETCH FIRST 1 ROWS ONLY;
-  
-       --Question III.2(List all courses with the number of students enrolled in each.)
- 
-SELECT c.CourseName, COUNT(e.StudentID) AS NumberOfStudents
-FROM Courses c
-LEFT JOIN Enrollments e ON c.CourseID = e.CourseID
-GROUP BY c.CourseName;
-
-
-      --Question III.3(Retrieve the student names along with the courses they are enrolled in.)
- 
- 
-SELECT s.FirstName, s.LastName, c.CourseID, c.CourseName
-FROM Students s
-JOIN Enrollments e ON s.StudentID = e.StudentID
-JOIN Courses c ON e.CourseID = c.CourseID;
-
-      --Question III.4(Count the total number of students enrolled in each course. )
-      
-SELECT c.CourseID, c.CourseName, COUNT(e.StudentID) AS "Total students enrolled"
-FROM Courses c
-JOIN Enrollments e ON c.CourseID = e.CourseID
-JOIN Students s ON e.StudentID = s.StudentID
-GROUP BY c.CourseID, c.CourseName;
-    
-    
-       --Question III.5(Show all students who made payments, including their names and the amount paid. )
-       
-  Select s.FirstName,s.LastName,p.AmountPaid from Students s Join Payments p 
-  On s.StudentID=p.StudentID Group by s.FirstName,s.LastName,p.AmountPaid;
-   
-      --Question III.6(Show students who havent enrolled in any course )
-
-SELECT s.StudentID, s.FirstName, s.LastName
-FROM Students s
-LEFT JOIN Enrollments e ON s.StudentID = e.StudentID
-WHERE e.CourseID IS NULL;
-   
-        --Question III.7(Identify the course with the highest enrollment.  )
-        
-        
-SELECT c.CourseName, c.CourseID, COUNT(e.StudentID) AS "Total Enrolled"
-FROM Courses c
-JOIN Enrollments e ON c.CourseID = e.CourseID
-GROUP BY c.CourseID, c.CourseName
-ORDER BY "Total Enrolled" DESC
-FETCH FIRST 1 ROWS ONLY;
-
-
-
---Question IV
---Question IV
---Question IV
-
-
--- Creating database tables
-
-
-CREATE TABLE Clients ( 
-ClientsID NUMBER PRIMARY KEY, 
-FirstName VARCHAR2(50), 
-LastName VARCHAR2(50), 
-Email VARCHAR2(100), 
-PhoneNumber VARCHAR2(15) 
-); 
-
-
-CREATE TABLE Tickets ( 
-TicketID NUMBER PRIMARY KEY, 
-ClientsID NUMBER, 
-EventName VARCHAR2(100), 
-EventDate DATE, 
-SeatNumber VARCHAR2(10), 
-Price NUMBER(10, 2), 
-BookingDate DATE, 
-constraint fk_ClientID FOREIGN KEY (ClientsID) REFERENCES Clients(ClientsID) 
-); 
-
-
-
----- Inserting datas
-
----- Insert data into Customer table
-INSERT INTO Clients (ClientsID, FirstName, LastName, Email, PhoneNumber) VALUES (1, 'Emmanuel', 'Niyonzima', 'emmanuel.niyonzima@email.com', '0789123456');
-INSERT INTO Clients (ClientsID, FirstName, LastName, Email, PhoneNumber) VALUES (2, 'Chantal', 'Mukamana', 'chantal.mukamana@email.com', '0787654321');
-INSERT INTO Clients (ClientsID, FirstName, LastName, Email, PhoneNumber) VALUES (3, 'Thierry', 'Nkubito', 'thierry.nkubito@email.com', '0786543210');
-INSERT INTO Clients (ClientsID, FirstName, LastName, Email, PhoneNumber) VALUES (4, 'Juliette', 'Niyonsenga', 'juliette.niyonsenga@email.com', '0788776543');
-INSERT INTO Clients (ClientsID, FirstName, LastName, Email, PhoneNumber) VALUES (5, 'Patrick', 'Hakizimana', 'patrick.hakizimana@email.com', '0786332456');
-INSERT INTO Clients (ClientsID, FirstName, LastName, Email, PhoneNumber) VALUES (6, 'Alice', 'Ishimwe', 'alice.ishimwe@email.com', '0789898765');
---
----- Insert dynamic data into Tickets table with different events and seats
-INSERT INTO Tickets (TicketID, ClientsID, EventName, EventDate, SeatNumber, Price, BookingDate) 
-VALUES (10, 1, 'Rwanda National Music Concert', TO_DATE('2024-04-15', 'YYYY-MM-DD'), 'A1', 5000.00, TO_DATE('2024-03-20', 'YYYY-MM-DD'));
-
-INSERT INTO Tickets (TicketID, ClientsID, EventName, EventDate, SeatNumber, Price, BookingDate) 
-VALUES (20, 2, 'Tech Conference Rwanda', TO_DATE('2024-04-18', 'YYYY-MM-DD'), 'B2', 6000.00, TO_DATE('2024-03-22', 'YYYY-MM-DD'));
-
-INSERT INTO Tickets (TicketID, ClientsID, EventName, EventDate, SeatNumber, Price, BookingDate) 
-VALUES (30, 3, 'Cultural Dance Showcase', TO_DATE('2024-04-20', 'YYYY-MM-DD'), 'C3', 4000.00, TO_DATE('2024-03-24', 'YYYY-MM-DD'));
-
-INSERT INTO Tickets (TicketID, ClientsID, EventName, EventDate, SeatNumber, Price, BookingDate) 
-VALUES (40, 4, 'Rwanda National Music Concert', TO_DATE('2024-04-15', 'YYYY-MM-DD'), 'D4', 5000.00, TO_DATE('2024-03-23', 'YYYY-MM-DD'));
-
-INSERT INTO Tickets (TicketID, ClientsID, EventName, EventDate, SeatNumber, Price, BookingDate) 
-VALUES (50, 5, 'Tech Conference Rwanda', TO_DATE('2024-04-18', 'YYYY-MM-DD'), 'E1', 6000.00, TO_DATE('2024-03-25', 'YYYY-MM-DD'));
-
-
-
-
- 
-    --  ANSWERING QUESTION NOW
-    --  ANSWERING QUESTION NOW
-    --  ANSWERING QUESTION NOW
-    
-  --Question IV:1(List all tickets booked by a specific customer (e.g., John Doe)). 
-  
-  
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (5, 'Michael', 'Green');
+
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (6, 'Emily', 'Clark');
+
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (7, 'David', 'Walker');
+
+INSERT INTO Authors (author_id, first_name, last_name) 
+VALUES (8, 'Sarah', 'Young');
+
+--Inserting into Books
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (1, 'The Great Adventure', 'Fiction', TO_DATE('2010-05-10', 'YYYY-MM-DD'), 'Available');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (2, 'Oracle for Beginners', 'Programming', TO_DATE('2015-08-20', 'YYYY-MM-DD'), 'Available');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (3, 'Learning Python', 'Programming', TO_DATE('2022-03-05', 'YYYY-MM-DD'), 'Available');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (4, 'The Mystery of Time', 'Mystery', TO_DATE('2018-11-10', 'YYYY-MM-DD'), 'Available');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (5, 'Deep Learning 101', 'Technology', TO_DATE('2020-07-15', 'YYYY-MM-DD'), 'Available');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (6, 'JavaScript for Kids', 'Programming', TO_DATE('2017-05-22', 'YYYY-MM-DD'), 'Checked out');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (7, 'Intro to Machine Learning', 'Technology', TO_DATE('2021-03-19', 'YYYY-MM-DD'), 'Available');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (8, 'Detective’s Journal', 'Mystery', TO_DATE('2019-08-12', 'YYYY-MM-DD'), 'Available');
+-- Add books published in the last 7 days
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (9, 'Advanced SQL', 'Programming', TO_DATE('2025-02-14', 'YYYY-MM-DD'), 'Available');
+
+INSERT INTO Books (book_id, title, genre, publication_date, availability_status) 
+VALUES (10, 'Web Development for Beginners', 'Technology', TO_DATE('2025-02-17', 'YYYY-MM-DD'), 'Available');
+
+
+--Insert into Book_Authors
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (1, 1);
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (2, 2);
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (3, 3);
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (4, 4);
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (5, 5);
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (6, 6);
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (7, 7);
+
+INSERT INTO Book_Authors (book_id, author_id) 
+VALUES (8, 8);
+
+
+--Insert into Members Table
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (1, 'Emma', 'Johnson', TO_DATE('2022-01-15', 'YYYY-MM-DD'), 'emma.johnson@example.com');
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (2, 'Lucas', 'Brown', TO_DATE('2023-06-20', 'YYYY-MM-DD'), 'lucas.brown@example.com');
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (3, 'Charlie', 'Wilson', TO_DATE('2024-07-01', 'YYYY-MM-DD'), 'charlie.wilson@example.com');
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (4, 'Sophia', 'Lee', TO_DATE('2023-03-11', 'YYYY-MM-DD'), 'sophia.lee@example.com');
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (5, 'Benjamin', 'Miller', TO_DATE('2021-09-25', 'YYYY-MM-DD'), 'benjamin.miller@example.com');
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (6, 'Isabella', 'Davis', TO_DATE('2022-04-14', 'YYYY-MM-DD'), 'isabella.davis@example.com');
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (7, 'William', 'Martinez', TO_DATE('2022-12-07', 'YYYY-MM-DD'), 'william.martinez@example.com');
+
+INSERT INTO Members (member_id, first_name, last_name, join_date, email) 
+VALUES (8, 'Grace', 'Hernandez', TO_DATE('2021-11-30', 'YYYY-MM-DD'), 'grace.hernandez@example.com');
+
+--Insert into Transactions Table
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (1, 1, 1, TO_DATE('2025-02-05', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (2, 2, 2, TO_DATE('2025-02-10', 'YYYY-MM-DD'), TO_DATE('2025-02-15', 'YYYY-MM-DD'), 'returned');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (3, 3, 3, TO_DATE('2025-02-08', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (4, 1, 3, TO_DATE('2025-02-01', 'YYYY-MM-DD'), TO_DATE('2025-02-05', 'YYYY-MM-DD'), 'returned');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (5, 4, 4, TO_DATE('2025-02-11', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (6, 5, 5, TO_DATE('2025-02-03', 'YYYY-MM-DD'), TO_DATE('2025-02-06', 'YYYY-MM-DD'), 'returned');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (7, 6, 6, TO_DATE('2025-02-12', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (8, 7, 7, TO_DATE('2025-02-14', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+-- Add more transactions for member 1 (Emma Johnson)
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (9, 1, 2, TO_DATE('2025-02-12', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (10, 1, 3, TO_DATE('2025-02-14', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+INSERT INTO Transactions (transaction_id, member_id, book_id, borrow_date, return_date, status)
+VALUES (11, 1, 4, TO_DATE('2025-02-16', 'YYYY-MM-DD'), NULL, 'borrowed');
+
+
+--Update querries
+--Update querries
+
+-- Update a book's availability status
+UPDATE Books
+SET availability_status = 'Checked out'
+WHERE book_id = 1;
+
+-- Update a member's email
+-- Update a member's email
+
+
+
+UPDATE Members
+SET email = 'emma.newemail@example.com'
+WHERE member_id = 1;
+
+-- Delete a transaction
+-- Delete a transaction
+-- Delete a transaction
+
+
+DELETE FROM Transactions
+WHERE transaction_id = 9;
+
+-- Delete a book and its associations
+DELETE FROM Book_Authors
+WHERE book_id = 9;
+
+DELETE FROM Books
+WHERE book_id = 9;
+
+--2. Perform Joins to Retrieve Related Data Across Tables
+--2. Perform Joins to Retrieve Related Data Across Tables
+
+-- Retrieve all books and their corresponding authors
 SELECT 
-    c.ClientsID,
-    c.FirstName || ' ' || c.LastName AS FullName,
-    t.TicketID,
-    COUNT(t.TicketID) AS TicketCount
+    b.title, 
+    a.first_name || ' ' || a.last_name AS "Author Names"
 FROM 
-    Clients c JOIN Tickets t ON c.ClientsID = t.ClientsID
-WHERE 
-    c.FirstName = 'Emmanuel' AND c.LastName = 'Niyonzima'
-GROUP BY 
-    c.ClientsID, c.FirstName, c.LastName, t.TicketID;
-
-     --Question IV:2(To find the three most expensive tickets.).
-     
-  SELECT  TicketID, EventName,Price FROM Tickets ORDER BY 
-  Price DESC FETCH FIRST 3 ROWS ONLY;
-   
-   
-    --Question IV:3(Retrieve all customers who have not booked any tickets. ).
-
-SELECT c.ClientsID, c.FirstName, c.LastName
-FROM Clients c 
-LEFT JOIN Tickets t ON c.ClientsID = t.ClientsID
-WHERE t.TicketID IS NULL;
-
-      --Question IV:4 (List all events that are scheduled after a specific date (e.g., '2023-12-01'))
-      
- SELECT EventName, EventDate 
-FROM Tickets 
-WHERE EventDate > TO_DATE('2024-04-18', 'YYYY-MM-DD');
-     
-      --Question IV:5 (Find the average price of tickets booked for each event. )
-      
-SELECT EventName, AVG(Price) AS AveragePrice
-FROM Tickets
-GROUP BY EventName;
-
-    --Question IV:6 (Retrieve the details of the latest ticket booked.)
-    
-SELECT TicketID, ClientsID, EventName, EventDate, SeatNumber, Price, BookingDate
-FROM Tickets
-ORDER BY BookingDate DESC
-FETCH FIRST 1 ROWS ONLY;
-
-   --Question IV:7 (List all customers along with the total amount they have spent on tickets).
- 
-SELECT c.ClientsID, c.FirstName, c.LastName, 
-       SUM(t.Price) AS TotalAmountSpent
-FROM Clients c
-JOIN Tickets t ON c.ClientsID = t.ClientsID
-GROUP BY c.ClientsID, c.FirstName, c.LastName;
-
-    --Question IV:8(Find the event with the highest number of tickets sold. )
-
-SELECT t.EventName, COUNT(t.TicketID) AS TicketsSold
-FROM Tickets t
-GROUP BY t.EventName
-ORDER BY TicketsSold DESC
-FETCH FIRST 1 ROWS ONLY;
-
-   
+    Books b
+JOIN 
+    Book_Authors ba ON b.book_id = ba.book_id
+JOIN 
+    Authors a ON ba.author_id = a.author_id;
 
 
 
-     
+--3. Use DDL, DML, DCL, and TCL Operations
+
+-- Create a new table for Publishers
+CREATE TABLE Publishers (
+    publisher_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    location VARCHAR(100)
+);
+
+-- Alter Books table to add a column for publisher_id
+ALTER TABLE Books ADD publisher_id INT;
+
+-- Add a foreign key constraint on publisher_id in Books table
+ALTER TABLE Books 
+ADD CONSTRAINT fk_publisher FOREIGN KEY (publisher_id) REFERENCES Publishers(publisher_id);
+
+-- To safely drop Publishers table, first remove the foreign key constraint
+ALTER TABLE Books DROP CONSTRAINT fk_publisher;
+
+-- Now, drop the Publishers table
+DROP TABLE Publishers;
+
+
+--DCL (Data Control Language)
+--DCL (Data Control Language)
+
+-- Step 1: Create the user if it doesn't exist
+CREATE USER librarian_user IDENTIFIED BY a123;
+
+-- Step 2: Grant SELECT privilege on Books to a specific user
+GRANT SELECT ON Books TO librarian_user;
+
+
+-- Step 3:Revoke the SELECT privilege from librarian_user
+REVOKE SELECT ON Books FROM librarian_user;
+
+
+--TCL (Transaction Control Language)
+
+
+-- Commit the current transaction
+COMMIT;
+
+-- Rollback the current transaction
+ROLLBACK;
+
+
+--4. Execute Basic SQL Commands (SELECT, INSERT, UPDATE, DELETE)
+--4. Execute Basic SQL Commands (SELECT, INSERT, UPDATE, DELETE)
+--4. Execute Basic SQL Commands (SELECT, INSERT, UPDATE, DELETE)
+
+--SELECT:
+
+-- Select all books
+SELECT * FROM Books;
+
+-- Select all transactions where the status is 'borrowed'
+SELECT * FROM Transactions
+WHERE status = 'borrowed';
+
+--INSERT: Already covered above.
+--
+--UPDATE: Already covered above.
+--
+--DELETE: Already covered above.
 
 
 
- 
+
+--5. Perform Joins and Subqueries
+--5. Perform Joins and Subqueries
+--5. Perform Joins and Subqueries
+
+
+-- Find books that are currently borrowed
+SELECT title
+FROM Books
+WHERE book_id IN (
+    SELECT book_id
+    FROM Transactions
+    WHERE status = 'borrowed'
+);
+
+--6. Identify Records Created in the Past Week
+--6. Identify Records Created in the Past Week
+--6. Identify Records Created in the Past Week
+
+
+-- Find books added in the past week
+SELECT title
+FROM Books
+WHERE publication_date > SYSDATE - INTERVAL '7' DAY;
+
+
+
+--7. Write a Query to Find Records Added in the Past 7 Days
+--7. Write a Query to Find Records Added in the Past 7 Days
+--7. Write a Query to Find Records Added in the Past 7 Days
+
+
+SELECT title
+FROM Books
+WHERE publication_date > SYSDATE - INTERVAL '7' DAY;
+
+
+
+--8. Retrieve the Top 5 Highest Values in Each Category
+--8. Retrieve the Top 5 Highest Values in Each Category
+--8. Retrieve the Top 5 Highest Values in Each Category
+
+
+SELECT * 
+FROM Transactions
+ORDER BY borrow_date DESC
+FETCH FIRST 5 ROWS ONLY;
+
+
+
+--9. Retrieve Records Where an Entity Has More Than 3 Related Transactions
+--9. Retrieve Records Where an Entity Has More Than 3 Related Transactions
+--9. Retrieve Records Where an Entity Has More Than 3 Related Transactions
+
+-- Find members with more than 3 transactions
+SELECT m.first_name, m.last_name, COUNT(t.transaction_id) AS transaction_count
+FROM Members m
+JOIN Transactions t ON m.member_id = t.member_id
+GROUP BY m.first_name, m.last_name
+HAVING COUNT(t.transaction_id) > 3;
