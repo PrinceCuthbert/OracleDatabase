@@ -55,7 +55,7 @@ To get a local copy up and running, follow these steps.
 ### Setup
 1. Clone this repository to your desired folder:
    ```bash
-   git clone https://github.com/PrinceCuthbert/OracleDatabase/tree/main
+    https://github.com/PrinceCuthbert/OracleDatabase/tree/main
 Open the SQL scripts in Oracle SQL Developer.
 
 ##Install
