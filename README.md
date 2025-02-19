@@ -115,12 +115,10 @@ A2: Yes, the project is designed to be scalable. You can add more tables, querie
 📝 License
 This project is MIT licensed.
 
-🖼️ Screenshots
-Database Schema
 
 
-Sample Query Output
-Sample Query Output
+### Sample Query Output
+
 
 ![Library Management Database Schema](./images/booksaddedfewweeks.png)
 ![Library Management Database Schema](./images/bookscurrentlyborrowed.png)
@@ -128,12 +126,10 @@ Sample Query Output
 
 ---
 
-### Sample Query Output
 
 
 
-     ```markdown
-     ![Database Schema](./images/schema.png)
-     ```
+
+     
 
 
