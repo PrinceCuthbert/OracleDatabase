@@ -123,6 +123,7 @@ This project is MIT licensed.
 ![Library Management Database Schema](./images/booksaddedfewweeks.png)
 ![Library Management Database Schema](./images/bookscurrentlyborrowed.png)
 ![Library Management Database Schema](./images/members_with_more_than_3_transactions.png)
+![Library Management Database Schema](./images/Schema.png)
 
 ---
 
